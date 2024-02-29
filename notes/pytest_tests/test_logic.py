@@ -10,7 +10,7 @@ from pytils.translit import slugify
 
 from http import HTTPStatus
 
-# Указываем фикстуру form_data в параметрах теста.
+
 def test_user_can_create_note(author_client, author, form_data):
     url = reverse('notes:add')
     # В POST-запросе отправляем данные, полученные из фикстуры form_data:
@@ -32,6 +32,7 @@ def test_user_can_create_note(author_client, author, form_data):
     # весь тест можно признать провалившимся, а последующие невыполненные проверки
     # не внесли бы в отчёт о тесте ничего принципиально важного.
 
+
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_note(client, form_data):
     url = reverse('notes:add')
@@ -44,6 +45,7 @@ def test_anonymous_user_cant_create_note(client, form_data):
     # Считаем количество заметок в БД, ожидаем 0 заметок.
     assert Note.objects.count() == 0
 
+
 def test_not_unique_slug(author_client, note, form_data):
     url = reverse('notes:add')
     # Подменяем slug новой заметки на slug уже существующей записи:
@@ -54,6 +56,7 @@ def test_not_unique_slug(author_client, note, form_data):
     assertFormError(response, 'form', 'slug', errors=(note.slug + WARNING))
     # Убеждаемся, что количество заметок в базе осталось равным 1:
     assert Note.objects.count() == 1
+
 
 def test_empty_slug(author_client, form_data):
     url = reverse('notes:add')
@@ -70,6 +73,7 @@ def test_empty_slug(author_client, form_data):
     # Проверяем, что slug заметки соответствует ожидаемому:
     assert new_note.slug == expected_slug
 
+
 def test_author_can_edit_note(author_client, form_data, note):
     # Получаем адрес страницы редактирования заметки:
     url = reverse('notes:edit', args=(note.slug,))
@@ -85,6 +89,7 @@ def test_author_can_edit_note(author_client, form_data, note):
     assert note.text == form_data['text']
     assert note.slug == form_data['slug']
 
+
 def test_other_user_cant_edit_note(not_author_client, form_data, note):
     url = reverse('notes:edit', args=(note.slug,))
     response = not_author_client.post(url, form_data)
@@ -96,6 +101,7 @@ def test_other_user_cant_edit_note(not_author_client, form_data, note):
     assert note.title == note_from_db.title
     assert note.text == note_from_db.text
     assert note.slug == note_from_db.slug
+
 
 def test_author_can_delete_note(author_client, slug_for_args):
     url = reverse('notes:delete', args=slug_for_args)

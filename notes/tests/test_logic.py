@@ -12,6 +12,7 @@ from notes.models import Note
 
 User = get_user_model()
 
+
 class NoteCreation(TestCase):
 
     @classmethod

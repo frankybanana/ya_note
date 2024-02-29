@@ -13,6 +13,7 @@ def test_home_availability_for_anonymous_user(client):
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
 
+
 @pytest.mark.parametrize(
     'name',
     ('notes:list', 'notes:add', 'notes:success')
@@ -21,6 +22,7 @@ def test_pages_availability_for_auth_user(not_author_client, name):
     url = reverse(name)
     response = not_author_client.get(url)
     assert response.status_code == HTTPStatus.OK
+
 
 @pytest.mark.parametrize(
     'parametrized_client, expected_status',
@@ -41,6 +43,7 @@ def test_pages_availability_for_different_users(
     url = reverse(name, args=(note.slug,))
     response = parametrized_client.get(url)
     assert response.status_code == expected_status
+
 
 @pytest.mark.parametrize(
     'name, args',

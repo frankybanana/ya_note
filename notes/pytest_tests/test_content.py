@@ -26,6 +26,7 @@ def test_notes_list_for_different_users(
     # Проверяем истинность утверждения "заметка есть в списке":
     assert (note in object_list) is note_in_list
 
+
 @pytest.mark.parametrize(
     # В качестве параметров передаём name и args для reverse.
     'name, args',
