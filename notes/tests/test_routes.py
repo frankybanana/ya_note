@@ -16,7 +16,7 @@ class TestRoutes(TestCase):
         cls.reader = User.objects.create(username='Просто_читатель')
         cls.notes = Note.objects.create(title='Заголовок',
                                         text='Текст',
-                                        slug='note-slug',
+                                        slug='note_slug',
                                         author=cls.author)
 
     def test_pages_availability(self):
