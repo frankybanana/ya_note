@@ -14,7 +14,7 @@ class TestRoutes(TestCase):
     def setUpTestData(cls):
         cls.author = User.objects.create(username='Автор_заметки')
         cls.reader = User.objects.create(username='Просто_читатель')
-        cls.notes = Note.objects.create(title='Заголовок',
+        cls.note = Note.objects.create(title='Заголовок',
                                         text='Текст',
                                         slug='note_slug',
                                         author=cls.author)
@@ -34,9 +34,9 @@ class TestRoutes(TestCase):
 
     def test_redirect_for_anonymous_client(self):
             urls = (
-                ('notes:detail', (self.notes.slug,)),
-                ('notes:edit', (self.notes.slug,)),
-                ('notes:delete', (self.notes.slug,)),
+                ('notes:detail', (self.note.slug,)),
+                ('notes:edit', (self.note.slug,)),
+                ('notes:delete', (self.note.slug,)),
                 ('notes:add', None),
                 ('notes:success', None),
                 ('notes:list', None),
@@ -68,9 +68,9 @@ class TestRoutes(TestCase):
 
     def test_pages_availability_for_author(self):
         urls = (
-            ('notes:detail', (self.notes.slug,)),
-            ('notes:edit', (self.notes.slug,)),
-            ('notes:delete', (self.notes.slug,)),
+            ('notes:detail', (self.note.slug,)),
+            ('notes:edit', (self.note.slug,)),
+            ('notes:delete', (self.note.slug,)),
         )
         users_statuses = (
             (self.author, HTTPStatus.OK),
