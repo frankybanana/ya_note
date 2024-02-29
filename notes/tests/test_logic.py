@@ -75,43 +75,36 @@ class SlugUniqueTesting(TestCase):
         self.assertEqual(Note.objects.count(), 1)
 
 
+class TestNoteEditDelete(TestCase):
+    NOTE_TEXT = 'Текст заметки'
+    NEW_NOTE_TEXT = 'Редактированная заметка'
 
+    @classmethod
+    def setUpTestData(cls):
+        cls.author = User.objects.create(username='Автор заметки')
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
+        cls.reader = User.objects.create(username='Читатель заметки')
+        cls.reader_client = Client()
+        cls.reader_client.force_login(cls.reader)
+        cls.notes = Note.objects.create(title='Заголовок',
+                                        text='Текст',
+                                        slug='note_slug',
+                                        author=cls.author)
+        cls.edit_url = reverse('notes:edit', args=(cls.notes.slug,))
+        cls.delete_url = reverse('notes:delete', args=(cls.notes.slug,))
+        cls.form_data = {'title': 'Новый заголовок',
+                         'text': 'Новый текст',
+                         'slug': 'new-slug'}
+        note_url = reverse('notes:detail', args=(cls.notes.slug,))
+        cls.url_to_note = note_url + '#notes'
 
+    def test_author_can_delete_note(self):
+        response = self.author_client.delete(self.delete_url)
+        self.assertRedirects(response, reverse('notes:success'))
+        self.assertEqual(Note.objects.count(), 0)
 
-
-# class TestCommentEditDelete(TestCase):
-#     # Тексты для комментариев не нужно дополнительно создавать
-#     # (в отличие от объектов в БД), им не нужны ссылки на self или cls,
-#     # поэтому их можно перечислить просто в атрибутах класса.
-#     NOTE_TEXT = 'Текст заметки'
-#     NEW_NOTE_TEXT = 'Редактированная заметка'
-#
-#     @classmethod
-#     def setUpTestData(cls):
-#         # Создаём новость в БД.
-#         cls.note = Note.objects.create(title='Заголовок', text='Текст')
-#         # Формируем адрес блока с комментариями, который понадобится для тестов.
-#         news_url = reverse('news:detail', args=(cls.news.id,))  # Адрес новости.
-#         cls.url_to_comments = news_url + '#comments'  # Адрес блока с комментариями.
-#         # Создаём пользователя - автора комментария.
-#         cls.author = User.objects.create(username='Автор комментария')
-#         # Создаём клиент для пользователя-автора.
-#         cls.author_client = Client()
-#         # "Логиним" пользователя в клиенте.
-#         cls.author_client.force_login(cls.author)
-#         # Делаем всё то же самое для пользователя-читателя.
-#         cls.reader = User.objects.create(username='Читатель')
-#         cls.reader_client = Client()
-#         cls.reader_client.force_login(cls.reader)
-#         # Создаём объект комментария.
-#         cls.comment = Comment.objects.create(
-#             news=cls.news,
-#             author=cls.author,
-#             text=cls.COMMENT_TEXT
-#         )
-#         # URL для редактирования комментария.
-#         cls.edit_url = reverse('news:edit', args=(cls.comment.id,))
-#         # URL для удаления комментария.
-#         cls.delete_url = reverse('news:delete', args=(cls.comment.id,))
-#         # Формируем данные для POST-запроса по обновлению комментария.
-#         cls.form_data = {'text': cls.NEW_COMMENT_TEXT}
+    def test_other_user_cant_delete_note(self):
+        response = self.reader_client.delete(self.delete_url)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(Note.objects.count(), 1)
