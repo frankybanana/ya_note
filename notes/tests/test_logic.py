@@ -23,8 +23,8 @@ class NoteCreation(TestCase):
         cls.auth_client = Client()
         cls.auth_client.force_login(cls.user)
         cls.form_data = {'title': 'Новый заголовок',
-                        'text': 'Новый текст',
-                        'slug': 'new-slug'}
+                         'text': 'Новый текст',
+                         'slug': 'new-slug'}
 
     def test_anonymous_user_cant_create_note(self):
         self.client.post(self.url, data=self.form_data)
@@ -61,18 +61,19 @@ class SlugUniqueTesting(TestCase):
         cls.auth_client = Client()
         cls.auth_client.force_login(cls.user)
         cls.note = Note.objects.create(title='Заголовок',
-                                        text='Текст',
-                                        slug='note_slug',
-                                        author=cls.user)
+                                       text='Текст',
+                                       slug='note_slug',
+                                       author=cls.user)
         cls.form_data = {'title': 'Новый заголовок',
-                        'text': 'Новый текст',
-                        'slug': 'new_slug'}
+                         'text': 'Новый текст',
+                         'slug': 'new_slug'}
 
     def test_not_unique_slug(self):
         url = reverse('notes:add')
         self.form_data['slug'] = self.note.slug
         response = self.auth_client.post(url, data=self.form_data)
-        self.assertFormError(response, form='form', field='slug', errors=(self.note.slug + WARNING))
+        self.assertFormError(response, form='form', field='slug',
+                             errors=(self.note.slug + WARNING))
         self.assertEqual(Note.objects.count(), 1)
 
 
@@ -89,9 +90,9 @@ class TestNoteEditDelete(TestCase):
         cls.reader_client = Client()
         cls.reader_client.force_login(cls.reader)
         cls.note = Note.objects.create(title='Заголовок',
-                                        text='Текст',
-                                        slug='note_slug',
-                                        author=cls.author)
+                                       text='Текст',
+                                       slug='note_slug',
+                                       author=cls.author)
         cls.edit_url = reverse('notes:edit', args=(cls.note.slug,))
         cls.delete_url = reverse('notes:delete', args=(cls.note.slug,))
         cls.form_data = {'title': 'Новый заголовок',
